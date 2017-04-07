@@ -1,31 +1,15 @@
 **写在前头:本插件只适用 android studio和 Intellij IDEA 工具,eclipse 的少年无视我吧!!!**
 
-这是一个根据JSONObject格式的字符串,自动生成实体类参数.
+这是一个根据数据库建表信息,自动生成实体类、控制器、服务、DAO等.
 
-  [github](https://github.com/zzz40500/GsonFormat)
-  
-  [jetbrains](https://plugins.jetbrains.com/plugin/7654?pr=androidstudio)
-  
-  [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-GsonFormat-brightgreen.svg?style=flat)](http://android-arsenal.com/details/1/1896)
-  
-  [swift 版](https://github.com/EnjoySR/ESJsonFormat-Xcode);
-  
-  [Json 新视觉](https://github.com/tianzhijiexian/JsonAnnotation)
+  [github](https://github.com/zeng198821/CodeGenerate)
   
 ###**写在前头:本插件只适用 android studio和 Intellij IDEA 工具!!!**
 
 
 ##版本说明
 
-版本1.2.2
-> 
-* 支持 field 类型的修改.
-* 支持快捷键打开 GsonFormat ,默认为 option+s(mac), alt+s(win)
-* 支持 field 名称的修改.
-* 支持添加 field 前缀.
-* 支持多种转换库 (Gson,Jackjson,FastJson,LoganSquare).
-* 支持 private 和 public 两种模式.
-* 支持过滤父类已有属性.
+
 
 
 
@@ -37,9 +21,9 @@
 2.安装插件,重启android studio
 ~~~
 
-方法2: [下载地址](https://plugins.jetbrains.com/plugin/7654?pr=androidstudio)
+方法2: 
 ~~~
-     1.下载 GsonFormat.jar ,
+     1.下载 CodeGenerate.jar ,
      2.Android studio  File->Settings..->Plugins -->
  install plugin from disk..导入下载的 GsonFormat.jar ,
      3重启 android studio .

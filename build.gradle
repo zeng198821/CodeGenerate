@@ -1,18 +1,33 @@
 buildscript {
     repositories {
-        maven { url 'http://dl.bintray.com/jetbrains/intellij-plugin-service' }
+        maven { url 'http://repo1.maven.org/maven2' }
+        maven { url 'http://mvnrepository.com/artifact/mysql/mysql-connector-java'}
     }
+
 }
 plugins {
     id "org.jetbrains.intellij" version "0.1.10"
 }
 
+
+allprojects {
+    repositories {
+        jcenter()
+    }
+    tasks.withType(JavaCompile) {
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
+    }
+}
+
 apply plugin: 'org.jetbrains.intellij'
 apply plugin: 'java'
-// dependencies {
-//     compile project(':ThirdPart:checktreetable')
-//     compile project(':ThirdPart:json')
-// }
+
+dependencies {
+    // https://mvnrepository.com/artifact/mysql/mysql-connector-java
+    runtime group: 'mysql', name: 'mysql-connector-java', version: '3.1.14'
+//    runtime "mysql:mysql-connector-java:5.1.6"
+}
 sourceSets {
     main {
         java {
@@ -23,7 +38,7 @@ sourceSets {
     }
 }
 intellij {
-    version 'IC-2016.2.5'
+    version 'IU-2016.2.5'
     pluginName 'GsonFormat'
     updateSinceUntilBuild false
 

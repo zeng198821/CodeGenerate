@@ -1,7 +1,7 @@
-GsonForamt
-------
+CodeGenerate
+------------
   [jetbrains](https://plugins.jetbrains.com/plugin/7654?pr=androidstudio)
-  [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-GsonFormat-brightgreen.svg?style=flat)](http://android-arsenal.com/details/1/1896)
+  [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-CodeGenerate-brightgreen.svg?style=flat)](http://android-arsenal.com/details/1/1896)
   [swift](https://github.com/EnjoySR/ESJsonFormat-Xcode)
   [Json Annotation](https://github.com/tianzhijiexian/JsonAnnotation)
   [中文Readme](README_CN.md)
@@ -11,11 +11,11 @@ Please do aware **This Plugin is only for Android Studio and IntelliJ IDEA**.
 
 ## Install   
 - Using IDE built-in plugin system on Windows:
-  - <kbd>File</kbd> > <kbd>Settings</kbd> > <kbd>Plugins</kbd> > <kbd>Browse repositories...</kbd> > <kbd>Search for "GsonFormat"</kbd> > <kbd>Install Plugin</kbd>
+  - <kbd>File</kbd> > <kbd>Settings</kbd> > <kbd>Plugins</kbd> > <kbd>Browse repositories...</kbd> > <kbd>Search for "CodeGenerate"</kbd> > <kbd>Install Plugin</kbd>
 - Using IDE built-in plugin system on MacOs:
-  - <kbd>Preferences</kbd> > <kbd>Settings</kbd> > <kbd>Plugins</kbd> > <kbd>Browse repositories...</kbd> > <kbd>Search for "GsonFormat"</kbd> > <kbd>Install Plugin</kbd>
+  - <kbd>Preferences</kbd> > <kbd>Settings</kbd> > <kbd>Plugins</kbd> > <kbd>Browse repositories...</kbd> > <kbd>Search for "CodeGenerate"</kbd> > <kbd>Install Plugin</kbd>
 - Manually:
-  - Download the [latest release](https://github.com/zzz40500/GsonFormat/releases/latest) and install it manually using <kbd>Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>Install plugin from disk...</kbd>
+  - Download the [latest release](https://github.com/zzz40500/CodeGenerate/releases/latest) and install it manually using <kbd>Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>Install plugin from disk...</kbd>
   - From official jetbrains store from [download](https://plugins.jetbrains.com/plugin/7654?pr=androidstudio)
   
 Restart IDE.
@@ -34,14 +34,14 @@ You can change the hotkey via:
 
 
 ## Demo picture
-![gsonFormat.gif](http://upload-images.jianshu.io/upload_images/166866-ff9dc336af72d7d7.gif?imageMogr2/auto-orient/strip)
+![CodeGenerate.gif](http://upload-images.jianshu.io/upload_images/166866-ff9dc336af72d7d7.gif?imageMogr2/auto-orient/strip)
   
 ## Version Info
 
 v1.2.2
 > 
 * Supports field type changes.
-* Supports shortcut to open GsonFormat, default option + s (mac), alt + s (win)
+* Supports shortcut to open CodeGenerate, default option + s (mac), alt + s (win)
 * Support for field name changes.
 * Support to add the prefix field.
 * Support for multiple conversion libraries (Gson, Jackjson, FastJson, LoganSquare).
@@ -50,7 +50,7 @@ v1.2.2
 
 ## License
 
-    Copyright 2014 The GsonFormat Authors
+    Copyright 2014 The CodeGenerate Authors
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.

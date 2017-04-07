@@ -9,7 +9,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.util.PsiUtilBase;
-import org.gsonformat.intellij.ui.JsonDialog;
+import com.yunjuanyunshu.ui.DBConn;
 
 /**
  * User: dim
@@ -43,13 +43,14 @@ public class MainAction extends BaseGenerateAction {
         Editor editor = event.getData(PlatformDataKeys.EDITOR);
         PsiFile mFile = PsiUtilBase.getPsiFileInEditor(editor, project);
         PsiClass psiClass = getTargetClass(editor, mFile);
-        JsonDialog jsonD = new JsonDialog(psiClass, mFile, project);
-        jsonD.setClass(psiClass);
-        jsonD.setFile(mFile);
-        jsonD.setProject(project);
-        jsonD.setSize(600, 400);
-        jsonD.setLocationRelativeTo(null);
-        jsonD.setVisible(true);
+        DBConn dbConn = new DBConn(psiClass,mFile,project);
+//        JsonDialog jsonD = new JsonDialog(psiClass, mFile, project);
+//        jsonD.setClass(psiClass);
+//        jsonD.setFile(mFile);
+//        jsonD.setProject(project);
+//        jsonD.setSize(600, 400);
+//        jsonD.setLocationRelativeTo(null);
+//        jsonD.setVisible(true);
 
     }
 

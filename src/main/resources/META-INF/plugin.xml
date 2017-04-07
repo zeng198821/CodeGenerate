@@ -8,7 +8,7 @@
     </description>
     <version>1.5.0</version>
     <vendor email="wyh405003836@126.com">zzz40500</vendor>
-    <idea-version since-build="107.121"/>
+    <idea-version since-build="143"/>
     <change-notes><![CDATA[
   <p>
   1.4.0
@@ -29,5 +29,8 @@
             <keyboard-shortcut keymap="$default" first-keystroke="alt s"/>
         </action>
     </actions>
-    <extensions defaultExtensionNs="com.intellij"/>
+    <extensions defaultExtensionNs="com.intellij">
+        <applicationService serviceInterface="com.yunjuanyunshu.CodeMakerSettings" serviceImplementation="com.yunjuanyunshu.CodeMakerSettings"/>
+        <applicationConfigurable instance="com.yunjuanyunshu.ui.CodeMakerConfigurable"/>
+    </extensions>
 </idea-plugin>

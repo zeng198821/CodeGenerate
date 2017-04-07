@@ -7,8 +7,8 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.impl.source.PsiJavaFileImpl;
 import org.apache.http.util.TextUtils;
 import org.gsonformat.intellij.ConvertBridge;
-import org.gsonformat.intellij.config.Config;
 import org.gsonformat.intellij.common.PsiClassUtil;
+import org.gsonformat.intellij.config.Config;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -29,11 +29,13 @@ public class JsonDialog extends JFrame implements ConvertBridge.Operator {
     private JTextField generateClassTF;
     private JPanel generateClassP;
     private JButton formatBtn;
+    private JButton treeTableTestButton;
     private PsiClass cls;
     private PsiFile file;
     private Project project;
     private String errorInfo = null;
     private String currentClass = null;
+    private JFrame fa;
 
     public JsonDialog(PsiClass cls, PsiFile file, Project project) throws HeadlessException {
         this.cls = cls;
@@ -45,6 +47,7 @@ public class JsonDialog extends JFrame implements ConvertBridge.Operator {
         this.setAlwaysOnTop(true);
         initGeneratePanel(file);
         initListener();
+        fa = this;
     }
 
     private void initListener() {
@@ -71,6 +74,13 @@ public class JsonDialog extends JFrame implements ConvertBridge.Operator {
                     String formatJson = jsonArray.toString(4);
                     editTP.setText(formatJson);
                 }
+
+            }
+        });
+        treeTableTestButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
 
             }
         });
