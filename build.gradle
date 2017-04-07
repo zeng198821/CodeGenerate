@@ -39,7 +39,7 @@ sourceSets {
 }
 intellij {
     version 'IU-2016.2.5'
-    pluginName 'GsonFormat'
+    pluginName 'CodeGenerate'
     updateSinceUntilBuild false
 
 //    publish {

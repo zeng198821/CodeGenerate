@@ -34,6 +34,12 @@ public class CreateFileAction implements Runnable {
         this.project = project;
     }
 
+    public CreateFileAction(String outputFile, String content, DataContext dataContext) {
+        this.outputFile = outputFile;
+        this.content = content;
+        this.dataContext = dataContext;
+    }
+
     @Override
     public void run() {
         try {

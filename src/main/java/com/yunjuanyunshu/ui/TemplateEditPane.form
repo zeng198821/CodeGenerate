@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="com.xiaohansong.codemaker.ui.TemplateEditPane">
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="com.yunjuanyunshu.ui.TemplateEditPane">
   <grid id="27dc6" binding="templateEdit" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="6" left="6" bottom="6" right="6"/>
     <constraints>

@@ -22,6 +22,6 @@ public class CodeMaker implements ApplicationComponent {
     @Override
     @NotNull
     public String getComponentName() {
-        return "com.xiaohansong.codemaker.CodeMaker";
+        return "com.yunjuanyunshu.CodeMaker";
     }
 }
