@@ -6,19 +6,19 @@
 ##  $USER - user.name
 ##
 ## Available variables:
-##  $class0 - the context class
+##  $TableEntity.tableJavaName - the context class
 ##  $class1 - the selected class, like $class2, $class2
-##  $ClassName - generate by the config of "Class Name", the generated class name
+##  $TableEntity.tableJavaName - generate by the config of "Class Name", the generated class name
 ##
 ## Class Entry Structure:
-##  $class0.className - the class Name
-##  $class0.packageName - the packageName
-##  $class0.importList - the list of imported classes name
-##  $class0.fields - the list of the class fields
+##  $TableEntity.tableJavaName.TableEntity.tableJavaName - the class Name
+##  $TableEntity.tableJavaName.packageName - the packageName
+##  $TableEntity.tableJavaName.importList - the list of imported classes name
+##  $TableEntity.tableJavaName.fields - the list of the class fields
 ##          - type: the field type
 ##          - name: the field name
 ##          - modifier: the field modifier, like "private"
-##  $class0.methods - the list of class methods
+##  $TableEntity.tableJavaName.methods - the list of class methods
 ##          - name: the method name
 ##          - modifier: the method modifier, like "private static"
 ##          - returnType: the method returnType
@@ -27,26 +27,46 @@
 ########################################################################################
 #macro (cap $strIn)$strIn.valueOf($strIn.charAt(0)).toUpperCase()$strIn.substring(1)#end
 #macro (low $strIn)$strIn.valueOf($strIn.charAt(0)).toLowerCase()$strIn.substring(1)#end
-#set($class0Var = "#low(${class0.ClassName})")
-#set($class1Var = "#low(${class1.ClassName})")
+
 /**
 * Alipay.com Inc.
 * Copyright (c) 2004-$YEAR All Rights Reserved.
 */
-package $PacakgeStr;
+package $TableEntity.PackageStr;
 
 
 /**
- *
+ * ${TableEntity.tableJavaDesc}
  * @author $USER
- * @version ${ClassName}.java, v 0.1 $TIME $USER Exp $$
+ * @version ${TableEntity.tableJavaName}.java, v 0.1 $TIME $USER Exp $$
  */
-class $ClassName {
+class $TableEntity.tableJavaName {
 
-#foreach($field in $class0.ColumnEntityList)
-#if( $field.modifier.equals("private"))
-    private ${class0Var}.set#cap($field.ColJavaName)(${class1Var}.get#cap($field.ColJavaName)());
+#foreach($field in $TableEntity.ColumnEntityList)
+    /**
+     * ${field.colJavaDesc}
+     */
+    private ${field.colJavaType} ${field.colJavaName} ;
 #end
+
+
+#foreach($field in $TableEntity.ColumnEntityList)
+    /**
+     * 获取${field.colJavaDesc}
+     * @return ${field.colJavaDesc}
+     */
+    private ${field.colJavaType} get#cap(${field.colJavaName})(){
+        return ${field.colJavaName};
+    }
+
+    /**
+     * 设置${field.colJavaDesc}
+     * @param ${field.colJavaName} ${field.colJavaDesc}
+     */
+    private void set#cap(${field.colJavaName})(${field.colJavaType} ${field.colJavaName}){
+        this.${field.colJavaName} = ${field.colJavaName};
+    }
+
 #end
 
 }

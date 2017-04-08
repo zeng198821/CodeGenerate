@@ -195,11 +195,11 @@ public class GridMain extends JFrame implements ConvertBridge.Operator {
         List<ColumnEntity> tmpColList = new ArrayList<ColumnEntity>();
         String tmpColName="";
         for(int i =0;i<mainTable.getRowCount();i++){
+            ColumnEntity tmpColumnEntity = new ColumnEntity();
             for (int j=0;j<mainTable.getColumnCount();j++){
-                ColumnEntity tmpColumnEntity = new ColumnEntity();
                 tmpColName = mainTable.getColumnName(j);
                 // "DBName", "DBType","DBLengtg","DBDesc","JavaName","JavaType","JavaDesc","list","form","edit","max","min"
-                String valueStr = (!tmpColName.equals("list") && !tmpColName.equals("form") && !tmpColName.equals("edit") && !tmpColName.equals("DBNullAble")) ? (String) mainTable.getValueAt(i,j) : "";
+                String valueStr = (!tmpColName.equals("list") && !tmpColName.equals("form") && !tmpColName.equals("edit") && !tmpColName.equals("DBNullAble")) ? String.valueOf(mainTable.getValueAt(i,j)) : "";
                 Boolean boolValue = (tmpColName.equals("list") || tmpColName.equals("form") || tmpColName.equals("edit") || tmpColName.equals("DBNullAble"))?(Boolean)mainTable.getValueAt(i,j) : false;
                 switch (tmpColName){
                     case "DBName":
@@ -243,7 +243,9 @@ public class GridMain extends JFrame implements ConvertBridge.Operator {
                         break;
                 }
             }
+            tmpColList.add(tmpColumnEntity);
         }
+        tableEntity.setColumnEntityList(tmpColList);
         return  tableEntity;
     }
 

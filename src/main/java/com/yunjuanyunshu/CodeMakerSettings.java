@@ -68,88 +68,78 @@ public class CodeMakerSettings implements PersistentStateComponent<CodeMakerSett
                                            + "\n"
                                            + "#end\n" + "\n" + "}\n";
 
-    public final static String CONVERTER = "########################################################################################\n"
-                                           + "##\n"
-                                           + "## Common variables:\n"
-                                           + "##  $YEAR - yyyy\n"
-                                           + "##  $TIME - yyyy-MM-dd HH:mm:ss\n"
-                                           + "##  $USER - user.name\n"
-                                           + "##\n"
-                                           + "## Available variables:\n"
-                                           + "##  $class0 - the context class\n"
-                                           + "##  $class1 - the selected class, like $class2, $class2\n"
-                                           + "##  $ClassName - generate by the config of \"Class Name\", the generated class name\n"
-                                           + "##\n"
-                                           + "## Class Entry Structure:\n"
-                                           + "##  $class0.className - the class Name\n"
-                                           + "##  $class0.packageName - the packageName\n"
-                                           + "##  $class0.importList - the list of imported classes name\n"
-                                           + "##  $class0.fields - the list of the class fields\n"
-                                           + "##          - type: the field type\n"
-                                           + "##          - name: the field name\n"
-                                           + "##          - modifier: the field modifier, like \"private\"\n"
-                                           + "##  $class0.methods - the list of class methods\n"
-                                           + "##          - name: the method name\n"
-                                           + "##          - modifier: the method modifier, like \"private static\"\n"
-                                           + "##          - returnType: the method returnType\n"
-                                           + "##          - params: the method params, like \"(String name)\"\n"
-                                           + "##\n"
-                                           + "########################################################################################\n"
-                                           + "#macro (cap $strIn)$strIn.valueOf($strIn.charAt(0)).toUpperCase()$strIn.substring(1)#end\n"
-                                           + "#macro (low $strIn)$strIn.valueOf($strIn.charAt(0)).toLowerCase()$strIn.substring(1)#end\n"
-                                           + "#set($class0Var = \"#low(${class0.ClassName})\")\n"
-                                           + "#set($class1Var = \"#low(${class1.ClassName})\")\n"
-                                           + "package $class0.PackageName;\n"
-                                           + "\n"
-                                           + "#foreach($importer in $class0.ImportList)\n"
-                                           + "import $importer;\n"
-                                           + "#end\n"
-                                           + "\n"
-                                           + "/**\n"
-                                           + " *\n"
-                                           + " * @author $USER\n"
-                                           + " * @version $Id: ${ClassName}.java, v 0.1 $TIME $USER Exp $$\n"
-                                           + " */\n"
-                                           + "class $ClassName {\n"
-                                           + "\n"
-                                           + "    /**\n"
-                                           + "     * Convert ${class1.ClassName} to ${class0.ClassName}\n"
-                                           + "     * @param ${class1Var}\n"
-                                           + "     * @return\n"
-                                           + "     */\n"
-                                           + "    public static $class0.ClassName convertTo${class0.ClassName}($class1.ClassName #low($class1.ClassName)) {\n"
-                                           + "        if (${class1Var} == null) {\n"
-                                           + "            return null;\n"
-                                           + "        }\n"
-                                           + "        $class0.ClassName ${class0Var} = new ${class0.ClassName}();\n"
-                                           + "\n"
-                                           + "#foreach($field in $class0.Fields)\n"
-                                           + "#if( $field.modifier.equals(\"private\"))\n"
-                                           + "        ${class0Var}.set#cap($field.Name)(${class1Var}.get#cap($field.Name)());\n"
-                                           + "#end\n"
-                                           + "#end\n"
-                                           + "\n"
-                                           + "        return ${class0Var};\n"
-                                           + "    }\n"
-                                           + "\n"
-                                           + "    /**\n"
-                                           + "     * Convert ${class0.ClassName} to ${class1.ClassName}\n"
-                                           + "     * @param ${class0Var}\n"
-                                           + "     * @return\n"
-                                           + "     */\n"
-                                           + "    public static $class1.ClassName convertTo${class1.ClassName}($class0.ClassName #low($class0.ClassName)) {\n"
-                                           + "        if (${class0Var} == null) {\n"
-                                           + "            return null;\n"
-                                           + "        }\n"
-                                           + "        $class1.ClassName ${class1Var} = new ${class1.ClassName}();\n"
-                                           + "\n"
-                                           + "#foreach($field in $class1.Fields)\n"
-                                           + "#if( $field.modifier.equals(\"private\"))\n"
-                                           + "        ${class1Var}.set#cap($field.Name)(${class0Var}.get#cap($field.Name)());\n"
-                                           + "#end\n"
-                                           + "#end\n"
-                                           + "\n"
-                                           + "        return ${class1Var};\n" + "    }\n" + "}\n";
+    public final static String CONVERTER = "########################################################################################\n" +
+            "##\n" +
+            "## Common variables:\n" +
+            "##  $YEAR - yyyy\n" +
+            "##  $TIME - yyyy-MM-dd HH:mm:ss\n" +
+            "##  $USER - user.name\n" +
+            "##\n" +
+            "## Available variables:\n" +
+            "##  $TableEntity.tableJavaName - the context class\n" +
+            "##  $class1 - the selected class, like $class2, $class2\n" +
+            "##  $TableEntity.tableJavaName - generate by the config of \"Class Name\", the generated class name\n" +
+            "##\n" +
+            "## Class Entry Structure:\n" +
+            "##  $TableEntity.tableJavaName.TableEntity.tableJavaName - the class Name\n" +
+            "##  $TableEntity.tableJavaName.packageName - the packageName\n" +
+            "##  $TableEntity.tableJavaName.importList - the list of imported classes name\n" +
+            "##  $TableEntity.tableJavaName.fields - the list of the class fields\n" +
+            "##          - type: the field type\n" +
+            "##          - name: the field name\n" +
+            "##          - modifier: the field modifier, like \"private\"\n" +
+            "##  $TableEntity.tableJavaName.methods - the list of class methods\n" +
+            "##          - name: the method name\n" +
+            "##          - modifier: the method modifier, like \"private static\"\n" +
+            "##          - returnType: the method returnType\n" +
+            "##          - params: the method params, like \"(String name)\"\n" +
+            "##\n" +
+            "########################################################################################\n" +
+            "#macro (cap $strIn)$strIn.valueOf($strIn.charAt(0)).toUpperCase()$strIn.substring(1)#end\n" +
+            "#macro (low $strIn)$strIn.valueOf($strIn.charAt(0)).toLowerCase()$strIn.substring(1)#end\n" +
+            "\n" +
+            "/**\n" +
+            "* Alipay.com Inc.\n" +
+            "* Copyright (c) 2004-$YEAR All Rights Reserved.\n" +
+            "*/\n" +
+            "package $TableEntity.PackageStr;\n" +
+            "\n" +
+            "\n" +
+            "/**\n" +
+            " * ${TableEntity.tableJavaDesc}\n" +
+            " * @author $USER\n" +
+            " * @version ${TableEntity.tableJavaName}.java, v 0.1 $TIME $USER Exp $$\n" +
+            " */\n" +
+            "class $TableEntity.tableJavaName {\n" +
+            "\n" +
+            "#foreach($field in $TableEntity.ColumnEntityList)\n" +
+            "    /**\n" +
+            "     * ${field.colJavaDesc}\n" +
+            "     */\n" +
+            "    private ${field.colJavaType} ${field.colJavaName} ;\n" +
+            "#end\n" +
+            "\n" +
+            "\n" +
+            "#foreach($field in $TableEntity.ColumnEntityList)\n" +
+            "    /**\n" +
+            "     * 获取${field.colJavaDesc}\n" +
+            "     * @return ${field.colJavaDesc}\n" +
+            "     */\n" +
+            "    private ${field.colJavaType} get#cap(${field.colJavaName})(){\n" +
+            "        return ${field.colJavaName};\n" +
+            "    }\n" +
+            "\n" +
+            "    /**\n" +
+            "     * 设置${field.colJavaDesc}\n" +
+            "     * @param ${field.colJavaName} ${field.colJavaDesc}\n" +
+            "     */\n" +
+            "    private void set#cap(${field.colJavaName})(${field.colJavaType} ${field.colJavaName}){\n" +
+            "        this.${field.colJavaName} = ${field.colJavaName};\n" +
+            "    }\n" +
+            "\n" +
+            "#end\n" +
+            "\n" +
+            "}\n";
 
     public CodeMakerSettings() {
         loadDefaultSettings();

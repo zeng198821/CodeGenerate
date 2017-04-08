@@ -68,12 +68,18 @@ public class ColumnEntity implements BaseEntity {
     Boolean editAble;
 
 
-
-
+    /**
+     *
+     * @return
+     */
     public String getColDBName() {
         return colDBName;
     }
 
+    /**
+     *
+     * @param colDBName
+     */
     public void setColDBName(String colDBName) {
         this.colDBName = colDBName;
     }

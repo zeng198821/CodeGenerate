@@ -22,8 +22,9 @@ public class TemplateKeyUtil {
         tmpMap.put("YEAR", DateFormatUtils.format(now, "yyyy"));
         tmpMap.put("TIME", DateFormatUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
         tmpMap.put("USER", System.getProperty("user.name"));
-        tmpMap.put("ClassName", tableEntity.getTableJavaName());
-        tmpMap.put("PacakgeStr", tableEntity.getPackageStr());
+        tmpMap.put("TableEntity", tableEntity);
+        //tmpMap.put("PacakgeStr", tableEntity.getPackageStr());
+        //tmpMap.put("Field",tableEntity.getColumnEntityList().toArray());
         return tmpMap;
     }
 
