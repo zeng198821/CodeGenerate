@@ -25,11 +25,9 @@ import org.gsonformat.intellij.ui.ComboBoxTableModel;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.MouseInputListener;
 import javax.swing.table.TableColumnModel;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -48,11 +46,14 @@ public class GridMain extends JFrame implements ConvertBridge.Operator {
     private JTextField PackageText;
     private JList listDBTable;
     private JScrollPane listPane;
+    private JList listClassType;
+    private JScrollPane listClassPane;
     private Project project;
     private JFrame father;
 
     private HashMap<String,TableEntity> tableMap;
     private ComboBoxTableModel tableModel;
+    private CodeMakerSettings settings;
 
     private String schema;
     private String DBUSER;
@@ -68,6 +69,7 @@ public class GridMain extends JFrame implements ConvertBridge.Operator {
         setContentPane(mainPanel);
         this.father = father;
         this.project = project;
+        settings = ServiceManager.getService(CodeMakerSettings.class);
         setTitle("MySQlConnext");
         getRootPane().setDefaultButton(okButton);
         this.setAlwaysOnTop(true);
@@ -75,9 +77,14 @@ public class GridMain extends JFrame implements ConvertBridge.Operator {
         comboBox.setEditable(true);
         tableModel = new ComboBoxTableModel();
         listDBTable = new JList();
+        listClassType = new JList(settings.getCodeTemplateNamesArray());
+        listClassType.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         listDBTable.setModel(new DefaultComboBoxModel(getTableInfo(schema,DBUSER,DBPASSWORD,DBURL)));
+        //listClassType.setModel();
         //listDBTable.setModel(new DefaultComboBoxModel(new String[]{"so_student_info","test"}));
         mainTable = new JTable(tableModel);
+        MouseInputListener mouseInputListener = getMouseInputListener(mainTable);//
+        mainTable.addMouseListener(mouseInputListener);
         DefaultCellEditor editor = new DefaultCellEditor(comboBox);
         JCheckBox checkBox = new JCheckBox();
         checkBox.setHorizontalAlignment(JLabel.CENTER);
@@ -97,6 +104,7 @@ public class GridMain extends JFrame implements ConvertBridge.Operator {
         mainTable.setPreferredScrollableViewportSize(mainTable.getPreferredSize());
         gridPane.setViewportView(mainTable);
         listPane.setViewportView(listDBTable);
+        listClassPane.setViewportView(listClassType);
         //getContentPane().add(new JScrollPane(mainTable), "Center");
         initActionListener();
         father.setVisible(false);
@@ -266,6 +274,116 @@ public class GridMain extends JFrame implements ConvertBridge.Operator {
         return null;
     }
 
+
+    private MouseInputListener getMouseInputListener(final JTable jTable) {
+        return new MouseInputListener() {
+
+            final List<Integer> showMenuColIdxs = java.util.Arrays.asList(new Integer[]{8,9,10});
+
+            public void mouseClicked(MouseEvent e) {
+                processEvent(e);
+            }
+
+            /***
+             * //in order to trigger Left-click the event
+             */
+            public void mousePressed(MouseEvent e) {
+                processEvent(e);// is necessary!!!
+            }
+
+            public void mouseReleased(MouseEvent e) {
+                // processEvent(e);
+
+                //return;
+                if (e.getButton() == MouseEvent.BUTTON3) {// right click
+                    if(!showMenuColIdxs.contains(jTable.getSelectedColumn())){
+                        return;
+                    }
+                    JPopupMenu popupmenu = new JPopupMenu();
+                    JMenuItem runM = new JMenuItem("全选");
+                    JMenuItem copyParameterM = new JMenuItem("反选");
+                    MyMenuActionListener yMenuActionListener = new MyMenuActionListener(jTable);
+                    runM.addActionListener(yMenuActionListener);
+                    copyParameterM.addActionListener(yMenuActionListener);
+                    popupmenu.add(runM);
+                    popupmenu.add(copyParameterM);
+                    popupmenu.show(e.getComponent(), e.getX(), e.getY());
+                }
+            }
+
+
+
+
+            public void mouseEntered(MouseEvent e) {
+                processEvent(e);
+            }
+
+            public void mouseExited(MouseEvent e) {
+                processEvent(e);
+            }
+
+            public void mouseDragged(MouseEvent e) {
+                processEvent(e);
+            }
+
+            public void mouseMoved(MouseEvent e) {
+                processEvent(e);
+            }
+
+            private void processEvent(MouseEvent e) {
+                // Right-click on
+                if ((e.getModifiers() & MouseEvent.BUTTON3_MASK) != 0) {
+                    // System.out.println(e.getModifiers());
+                    // System.out.println("Right-click on");
+                    int modifiers = e.getModifiers();
+                    modifiers -= MouseEvent.BUTTON3_MASK;
+                    //modifiers |= MouseEvent.BUTTON1_MASK;
+                    MouseEvent ne = new MouseEvent(e.getComponent(), e.getID(),
+                            e.getWhen(), modifiers, e.getX(), e.getY(),
+                            e.getClickCount(), false);
+                    jTable.dispatchEvent(ne);// in order to trigger Left-click
+                    jTable.updateUI();
+                    // the event
+                }
+            }
+        };
+    }
+
+    class MyMenuActionListener implements ActionListener {
+
+        JTable jTable;
+        public MyMenuActionListener(JTable jTable){
+            this.jTable = jTable;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            String command = e.getActionCommand();
+            if (command.equalsIgnoreCase("全选")) {
+                setSelectAll(jTable.getSelectedColumn());
+
+            } else if (command.equalsIgnoreCase("反选")) {
+                setSelectOpposite(jTable.getSelectedColumn());
+            }
+        }
+
+        private void setSelectAll(int colIdx){
+            int tmpTableRows = jTable.getRowCount();
+            for(int i =0 ;i<tmpTableRows;i++){
+                jTable.setValueAt(Boolean.TRUE,i,colIdx);
+            }
+            jTable.updateUI();
+        }
+
+        private void setSelectOpposite(int colIdx){
+            int tmpTableRows = jTable.getRowCount();
+            for(int i =0 ;i<tmpTableRows;i++){
+                jTable.setValueAt(((Boolean)jTable.getValueAt(i,colIdx)).equals(Boolean.TRUE) ? Boolean.FALSE :Boolean.TRUE,i,colIdx);
+            }
+            jTable.updateUI();
+        }
+
+    }
 
 
 }

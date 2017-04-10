@@ -6,7 +6,9 @@ import com.intellij.openapi.components.Storage;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -16,7 +18,7 @@ import java.util.Map;
 @State(name = "CodeMakerSettings", storages = { @Storage(id = "app-default", file = "$APP_CONFIG$/CodeMaker-settings.xml") })
 public class CodeMakerSettings implements PersistentStateComponent<CodeMakerSettings> {
 
-    public final static String MODEL     = "########################################################################################\n"
+    public final static String MODEL  = "########################################################################################\n"
                                            + "##\n"
                                            + "## Common variables:\n"
                                            + "##  $YEAR - yyyy\n"
@@ -183,6 +185,30 @@ public class CodeMakerSettings implements PersistentStateComponent<CodeMakerSett
      */
     public Map<String, CodeTemplate> getCodeTemplates() {
         return codeTemplates;
+    }
+
+    /**
+     * Getter method for property <tt>codeTemplates</tt>.
+     *
+     * @return property value of codeTemplates
+     */
+    public String[] getCodeTemplateNamesArray() {
+        List<String> children = getCodeTemplateNamesList();
+        if(children == null || children.size() == 0)
+            return null;
+        return children.toArray(new String[children.size()]);
+    }
+
+    /**
+     * Getter method for property <tt>codeTemplates</tt>.
+     *
+     * @return property value of codeTemplates
+     */
+    public List<String> getCodeTemplateNamesList() {
+        List<String> children = new ArrayList<>();
+        Map<String, CodeTemplate> tmpMap = getCodeTemplates();
+        tmpMap.forEach((key, value) -> children.add(key));
+        return children;
     }
 
     /**
