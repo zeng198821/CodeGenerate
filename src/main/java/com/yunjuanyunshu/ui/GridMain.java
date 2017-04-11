@@ -150,6 +150,20 @@ public class GridMain extends JFrame implements ConvertBridge.Operator {
             }
         });
 
+        listClassType.addMouseListener(new MouseAdapter(){
+            public void mouseClicked(MouseEvent e){
+                if(e.getClickCount()==2){   //When double click JList
+                    int tmpListCount = listClassType.getModel().getSize();
+                    int[] tmpListSelectedIdx  = new int[tmpListCount];
+                    for(int i =0;i<tmpListCount;i++){
+                        tmpListSelectedIdx[i] = i;
+                    }
+                    listClassType.setSelectedIndices(tmpListSelectedIdx);
+                    //listClassType.setSelectedValue();
+                }
+            }
+        });
+
     }
 
     private void onOK(ActionEvent anActionEvent) {

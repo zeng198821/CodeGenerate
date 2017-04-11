@@ -1,0 +1,45 @@
+<idea-plugin version="2">
+    <name>GsonFormat</name>
+    <description><![CDATA[
+<html>quickly to convert a JSON string to an InnerClassEntity class ..<br>
+<a href="https://github.com/zzz40500/GsonFormat"> openSource</a>
+      </html>
+      ]]>
+    </description>
+    <version>1.5.0</version>
+    <vendor email="wyh405003836@126.com">zzz40500</vendor>
+    <idea-version since-build="143"/>
+    <change-notes><![CDATA[
+  <p>
+  1.4.0
+  <ul>
+  <li>New: Support for autovalue</li>
+  <li>New: Support for lombok</li>
+  <li>New: Support for split generate class</li>
+  </ul>
+  1.5.0
+  <ul>
+  <li>fix several bug </li>
+  <li>fix unlock setting window size </li>
+  </p>
+]]></change-notes>
+    <actions>
+        <group id="com.yunjuanyunshu.codemaker.action.CodeMakerMenu" class="com.yunjuanyunshu.action.CodeMakerGroup" text="CodeMaker"
+               description="" popup="true">
+            <add-to-group group-id="GenerateGroup" anchor="after" relative-to-action="JavaGenerateGroup2"/>
+        </group>
+        <action id="Gsonformat" class="org.gsonformat.intellij.MainAction" text="GsonFormat">
+            <add-to-group group-id="GenerateGroup" anchor="last"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="alt s"/>
+        </action>
+    </actions>
+    <extensions defaultExtensionNs="com.intellij">
+        <applicationService serviceInterface="com.yunjuanyunshu.CodeMakerSettings" serviceImplementation="com.yunjuanyunshu.CodeMakerSettings"/>
+        <applicationConfigurable instance="com.yunjuanyunshu.ui.CodeMakerConfigurable"/>
+    </extensions>
+    <application-components>
+        <component>
+            <implementation-class>com.yunjuanyunshu.CodeMaker</implementation-class>
+        </component>
+    </application-components>
+</idea-plugin>
