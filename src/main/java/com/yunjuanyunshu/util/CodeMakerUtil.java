@@ -6,6 +6,7 @@ import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.*;
+import com.yunjuanyunshu.CodeTemplate;
 import com.yunjuanyunshu.Entity.ClassEntry;
 
 import java.util.ArrayList;
@@ -50,6 +51,9 @@ public class CodeMakerUtil {
 
     public static String generateClassPath(Project project,String packagePath, String className) {
         return project.getBasePath() + "/src/" + packagePath.replace(".","/") +"/" + className +".java";
+    }
+    public static String generateClassPath(Project project,String packagePath, String className,CodeTemplate codeTemplate) {
+        return project.getBasePath() + "/src/" + packagePath.replace(".","/") +"/" + className+codeTemplate.getClassNameVm() +".java";
     }
 
     /**

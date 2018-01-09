@@ -63,7 +63,7 @@ public class DBConn extends JFrame implements ConvertBridge.Operator {
                 DatabaseConnection dbc=new DatabaseConnection(tmpDBUser,tmpDBPasswrd,tmpDBUrl);
                 if(dbc.testDBConn()){
                     dbConn.setVisible(false);
-                    GridMain gridMain = new GridMain(project,dbConn,tmpSchema,tmpDBUser,tmpDBPasswrd,tmpDBUrl);
+                    //GridMain gridMain = new GridMain(project,dbConn,tmpSchema,tmpDBUser,tmpDBPasswrd,tmpDBUrl);
                 }else {
                     JOptionPane.showMessageDialog(null, "数据库连接失败", "数据库连接", JOptionPane.WARNING_MESSAGE);
                 }

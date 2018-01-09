@@ -22,6 +22,9 @@ public class TableDao implements IDao<TableEntity>{
 
     DatabaseConnection dbc=null;
     Connection conn=null;
+    String dbUser;
+    String dbPassword;
+    String dbUrl;
 
     public TableDao(){
         try{
@@ -34,12 +37,21 @@ public class TableDao implements IDao<TableEntity>{
 
 
     public TableDao(String DBUSER,String DBPASSWORD,String DBURL){
+        this.dbUser = DBUSER;
+        this.dbPassword = DBPASSWORD;
+        this.dbUrl = DBURL;
         try{
-            dbc=new DatabaseConnection(DBUSER,DBPASSWORD,DBURL);
+            dbc=new DatabaseConnection(this.dbUser,this.dbPassword ,this.dbUrl);
             conn = dbc.getConnection();
         }catch(Exception e){
             e.printStackTrace();
         }
+    }
+
+
+    public void disConn (){
+        conn = null;
+        dbc.closeConnection();
     }
 
     @Override
@@ -74,7 +86,7 @@ public class TableDao implements IDao<TableEntity>{
         PreparedStatement pstmt=null;
         try{
 
-            dbc=new DatabaseConnection();
+            dbc=new DatabaseConnection(this.dbUser,this.dbPassword ,this.dbUrl);
             conn = dbc.getConnection();
             pstmt=this.conn.prepareStatement(sql);
             pstmt.setString(1,schema);
@@ -89,7 +101,7 @@ public class TableDao implements IDao<TableEntity>{
                 tmp.setTableJavaName(HumpLineUtil.getJavaTableName(tmp.getTableDBName()));
                 tmp.setTableJavaDesc(tmp.getTableDBDesc());
 
-                ColumnDao columnDao =new ColumnDao();
+                ColumnDao columnDao =new ColumnDao(this.dbUser,this.dbPassword ,this.dbUrl);
                 tmp.setColumnEntityList(columnDao.findAllColumnInfo(schema,tmp.getTableDBName()));
                 all.add(tmp);
             }

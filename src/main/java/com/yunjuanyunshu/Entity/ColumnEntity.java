@@ -29,7 +29,7 @@ public class ColumnEntity implements BaseEntity {
     Long colDBLength;
 
     /**
-     * 是否允许为空
+     * 数据库该字段是否允许为空
      */
     Boolean colDBNullAble;
 
@@ -48,11 +48,11 @@ public class ColumnEntity implements BaseEntity {
     /**
      * 最大范围值
      */
-    double colRangMax;
+    Double colRangMax;
     /**
      * 最小范围值
      */
-    double colRangMin;
+    Double colRangMin;
 
     /**
      * 是否列表展示
@@ -67,6 +67,10 @@ public class ColumnEntity implements BaseEntity {
      */
     Boolean editAble;
 
+    /**
+     * Java类该字段是否允许为空
+     */
+    Boolean colJavaNullAble;
 
     /**
      *
@@ -132,19 +136,19 @@ public class ColumnEntity implements BaseEntity {
         this.colJavaDesc = colJavaDesc;
     }
 
-    public double getColRangMax() {
+    public Double getColRangMax() {
         return colRangMax;
     }
 
-    public void setColRangMax(double colRangMax) {
+    public void setColRangMax(Double colRangMax) {
         this.colRangMax = colRangMax;
     }
 
-    public double getColRangMin() {
+    public Double getColRangMin() {
         return colRangMin;
     }
 
-    public void setColRangMin(double colRangMin) {
+    public void setColRangMin(Double colRangMin) {
         this.colRangMin = colRangMin;
     }
 
@@ -178,5 +182,13 @@ public class ColumnEntity implements BaseEntity {
 
     public void setColDBNullAble(Boolean colDBNullAble) {
         this.colDBNullAble = colDBNullAble;
+    }
+
+    public Boolean getColJavaNullAble() {
+        return colJavaNullAble;
+    }
+
+    public void setColJavaNullAble(Boolean colJavaNullAble) {
+        this.colJavaNullAble = colJavaNullAble;
     }
 }

@@ -29,7 +29,7 @@ public class CodeMakerConfigurable implements SearchableConfigurable {
     @NotNull
     @Override
     public String getId() {
-        return "plugins.codemaker";
+        return "plugins.codegenerate";
     }
 
     @Nullable
@@ -41,13 +41,13 @@ public class CodeMakerConfigurable implements SearchableConfigurable {
     @Nls
     @Override
     public String getDisplayName() {
-        return "CodeMaker";
+        return "CodeGenerate";
     }
 
     @Nullable
     @Override
     public String getHelpTopic() {
-        return "help.codemaker.configuration";
+        return "";
     }
 
     @Nullable
@@ -83,7 +83,7 @@ public class CodeMakerConfigurable implements SearchableConfigurable {
         for (Map.Entry<String, CodeTemplate> entry : configuration.getTabTemplates().entrySet()) {
             if (!entry.getValue().isValid()) {
                 throw new ConfigurationException(
-                    "Not property can be empty and classNumber should be a number");
+                    "属性均不能为空，classNumber必须填写数字");
             }
         }
         settings.setCodeTemplates(configuration.getTabTemplates());

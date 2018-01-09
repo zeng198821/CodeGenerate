@@ -39,7 +39,7 @@ public class TemplateEditPane {
         classNameText.setText(codeTemplate.getClassNameVm());
         addVmEditor(codeTemplate.getCodeTemplate());
         deleteTemplateButton.addActionListener(e -> {
-            int result = Messages.showYesNoDialog("Delete this template?", "Delete", null);
+            int result = Messages.showYesNoDialog("删除模板?", "删除", null);
             if (result == Messages.OK) {
                 settings.removeCodeTemplate(template);
                 parentPane.refresh(settings);

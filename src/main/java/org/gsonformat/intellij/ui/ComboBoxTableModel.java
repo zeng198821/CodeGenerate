@@ -68,7 +68,7 @@ public class ComboBoxTableModel extends AbstractTableModel {
         return false;
     }
 
-    protected static final int COLUMN_COUNT = 13;
+    protected static final int COLUMN_COUNT = 14;
 
     protected static final String[] validStates = {
             "String", "long", "int","float","double","boolean","Date"
@@ -79,7 +79,7 @@ public class ComboBoxTableModel extends AbstractTableModel {
             return;
         }
         List<ColumnEntity> tmpColList = tableEntity.getColumnEntityList();
-        Object[][] tmpdata = new Object[tmpColList.size()][13];
+        Object[][] tmpdata = new Object[tmpColList.size()][14];
         int i =0;
         for(ColumnEntity tmp : tmpColList){
             tmpdata[i][0] = tmp.getColDBName();
@@ -93,8 +93,9 @@ public class ComboBoxTableModel extends AbstractTableModel {
             tmpdata[i][8] = true;
             tmpdata[i][9] = true;
             tmpdata[i][10] = true;
-            tmpdata[i][11] = "";
+            tmpdata[i][11] = tmp.getColDBNullAble();
             tmpdata[i][12] = "";
+            tmpdata[i][13] = "";
             i++;
         }
         data = tmpdata;
@@ -116,6 +117,6 @@ public class ComboBoxTableModel extends AbstractTableModel {
     };
 
     protected static final String[] columnNames = {
-            "DBName", "DBType","DBLength","DBDesc","DBNullAble","JavaName","JavaType","JavaDesc","list","form","edit","max","min"
+            "DBName", "DBType","DBLength","DBDesc","DBNullAble","JavaName","JavaType","JavaDesc","list","form","edit","JavaNullAble","max","min"
     };
 }

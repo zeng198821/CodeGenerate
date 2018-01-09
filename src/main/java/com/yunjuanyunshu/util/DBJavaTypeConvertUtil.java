@@ -16,9 +16,10 @@ public class DBJavaTypeConvertUtil {
     static {
 
         dbTypeMap.put("int","int");
-        dbTypeMap.put("bigint","Long");
+        dbTypeMap.put("bigint","long");
         dbTypeMap.put("float","float");
         dbTypeMap.put("double","double");
+        dbTypeMap.put("decimal","double");
         dbTypeMap.put("datetime","Date");
         dbTypeMap.put("date","Date");
         dbTypeMap.put("timestamp","Date");

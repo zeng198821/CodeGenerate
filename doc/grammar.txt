@@ -1,0 +1,115 @@
+Common variables:
+  $YEAR - yyyy
+  $TIME - yyyy-MM-dd HH:mm:ss
+  $USER - user.name
+
+Available variables:
+  $TableEntity.tableJavaName - the context class
+  $class1 - the selected class, like $class2, $class2
+  $TableEntity.tableJavaName - generate by the config of "Class Name", the generated class name
+  $
+
+Class Entry Structure:
+  $TableEntity.tableJavaName.TableEntity.tableJavaName - the class Name
+  $TableEntity.tableJavaName.packageName - the packageName
+  $TableEntity.tableJavaName.importList - the list of imported classes name
+  $TableEntity.tableJavaName.fields - the list of the class fields
+          - type: the field type
+          - name: the field name
+          - modifier: the field modifier, like "private"
+  $TableEntity.tableJavaName.methods - the list of class methods
+          - name: the method name
+          - modifier: the method modifier, like "private static"
+          - returnType: the method returnType
+          - params: the method params, like "(String name)"
+
+//  函数声明使用范例如下
+#macro (cap $strIn)$strIn.valueOf($strIn.charAt(0)).toUpperCase()$strIn.substring(1)end
+#macro (low $strIn)$strIn.valueOf($strIn.charAt(0)).toLowerCase()$strIn.substring(1)end
+
+
+
+// 循环使用范例如下
+#foreach($field in $TableEntity.ColumnEntityList)
+    /**
+     * ${field.colJavaDesc}
+     */
+  //  判断语句使用范例如下
+  #if($field.colJavaNullAble)
+     @CanNull(${field.colJavaNullAble})
+  #end
+  #if($field.colJavaType.equals("String"))
+     @Length(${field.colDBLength})
+  #end
+  #if($field.colJavaType.equals("long") || $field.colJavaType.equals("float") || $field.colJavaType.equals("double") || $field.colJavaType.equals("int"))
+     @Max(${field.colRangMax})
+     @Min(${field.colRangMin})
+  #end
+     private ${field.colJavaType} ${field.colJavaName} ;
+#end
+
+// null 判断 直接使用变量判断即可 null 在此时可以理解位 false
+
+
+
+// 完整范例
+
+
+#macro (cap $strIn)$strIn.valueOf($strIn.charAt(0)).toUpperCase()$strIn.substring(1)#end
+#macro (low $strIn)$strIn.valueOf($strIn.charAt(0)).toLowerCase()$strIn.substring(1)#end
+
+/**
+* Alipay.com Inc.
+* Copyright (c) 2004-$YEAR All Rights Reserved.
+*/
+package $TableEntity.PackageStr;
+
+
+/**
+ * ${TableEntity.tableJavaDesc}Server
+ * @author $USER
+ * @version ${TableEntity.tableJavaName}.java, v 0.1 $TIME $USER Exp $$
+ */
+class ${TableEntity.tableJavaName}Server {
+
+#foreach($field in $TableEntity.ColumnEntityList)
+    /**
+     * ${field.colJavaDesc}
+     */
+  #if($field.colJavaNullAble)
+     @CanNull(${field.colJavaNullAble})
+  #end
+  #if($field.colJavaType.equals("String"))
+     @Length(${field.colDBLength})
+  #end
+  #if($field.colRangMax && ($field.colJavaType.equals("long") || $field.colJavaType.equals("float") || $field.colJavaType.equals("double") || $field.colJavaType.equals("int")))
+     @Max(${field.colRangMax.doubleValue()})
+  #end
+  #if($field.colRangMin && ($field.colJavaType.equals("long") || $field.colJavaType.equals("float") || $field.colJavaType.equals("double") || $field.colJavaType.equals("int")))
+     @Min(${field.colRangMin.doubleValue()})
+  #end
+     private ${field.colJavaType} ${field.colJavaName} ;
+#end
+
+
+#foreach($field in $TableEntity.ColumnEntityList)
+    /**
+     * 获取${field.colJavaDesc}
+     * @return ${field.colJavaDesc}
+     */
+    private ${field.colJavaType} get#cap(${field.colJavaName})(){
+        return ${field.colJavaName};
+    }
+
+    /**
+     * 设置${field.colJavaDesc}
+     * @param ${field.colJavaName} ${field.colJavaDesc}
+     */
+    private void set#cap(${field.colJavaName})(${field.colJavaType} ${field.colJavaName}){
+        this.${field.colJavaName} = ${field.colJavaName};
+    }
+
+#end
+
+}
+

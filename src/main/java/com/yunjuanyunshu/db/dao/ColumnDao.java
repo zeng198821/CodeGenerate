@@ -24,6 +24,9 @@ public class ColumnDao implements IDao<BaseEntity> {
 
     DatabaseConnection dbc=null;
     Connection conn=null;
+    String dbUser;
+    String dbPassword;
+    String dbUrl;
 
     public ColumnDao(){
         try{
@@ -34,8 +37,11 @@ public class ColumnDao implements IDao<BaseEntity> {
         }
     }
     public ColumnDao(String DBUSER,String DBPASSWORD,String DBURL){
+        this.dbUser = DBUSER;
+        this.dbPassword = DBPASSWORD;
+        this.dbUrl = DBURL;
         try{
-            dbc=new DatabaseConnection(DBUSER,DBPASSWORD,DBURL);
+            dbc=new DatabaseConnection(this.dbUser,this.dbPassword ,this.dbUrl);
             conn = dbc.getConnection();
         }catch(Exception e){
             e.printStackTrace();

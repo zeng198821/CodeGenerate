@@ -7,15 +7,19 @@
 
 package com.yunjuanyunshu.ui;
 
+import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiFile;
 import com.yunjuanyunshu.CodeMakerSettings;
 import com.yunjuanyunshu.CodeTemplate;
 import com.yunjuanyunshu.Entity.ColumnEntity;
 import com.yunjuanyunshu.Entity.TableEntity;
 import com.yunjuanyunshu.action.CreateFileAction;
 import com.yunjuanyunshu.db.dao.TableDao;
+import com.yunjuanyunshu.db.dbc.DatabaseConnection;
 import com.yunjuanyunshu.util.CodeMakerUtil;
 import com.yunjuanyunshu.util.TemplateKeyUtil;
 import com.yunjuanyunshu.util.VelocityUtil;
@@ -48,38 +52,49 @@ public class GridMain extends JFrame implements ConvertBridge.Operator {
     private JScrollPane listPane;
     private JList listClassType;
     private JScrollPane listClassPane;
-    private Project project;
-    private JFrame father;
+    private JTextField ipText;
+    private JTextField portText;
+    private JTextField schemaText;
+    private JTextField userNameText;
+    private JTextField passwordText;
+    private JButton connButton;
+
 
     private HashMap<String,TableEntity> tableMap;
     private ComboBoxTableModel tableModel;
     private CodeMakerSettings settings;
 
-    private String schema;
-    private String DBUSER;
-    private String DBPASSWORD;
-    private String DBURL;
 
-    public GridMain(Project project, JFrame father, String schema, String DBUSER, String DBPASSWORD, String DBURL) {
+    private PsiClass cls;
+    private PsiFile file;
+    private Project project;
 
-        this.schema = schema;
-        this.DBUSER = DBUSER;
-        this.DBPASSWORD = DBPASSWORD;
-        this.DBURL = DBURL;
+    private boolean isConnect;
+
+
+    private TableDao tableDao;
+
+
+    public GridMain(PsiClass cls, PsiFile file, Project project) {
+        this.cls = cls;
+        this.file = file;
+        this.project = project;
+        isConnect = false;
         setContentPane(mainPanel);
-        this.father = father;
+        //this.father = father;
         this.project = project;
         settings = ServiceManager.getService(CodeMakerSettings.class);
-        setTitle("MySQlConnext");
+        setTitle("Code Generate");
         getRootPane().setDefaultButton(okButton);
         this.setAlwaysOnTop(true);
         JComboBox comboBox = new JComboBox(ComboBoxTableModel.getValidStates());
         comboBox.setEditable(true);
         tableModel = new ComboBoxTableModel();
         listDBTable = new JList();
+        listDBTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         listClassType = new JList(settings.getCodeTemplateNamesArray());
         listClassType.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-        listDBTable.setModel(new DefaultComboBoxModel(getTableInfo(schema,DBUSER,DBPASSWORD,DBURL)));
+
         //listClassType.setModel();
         //listDBTable.setModel(new DefaultComboBoxModel(new String[]{"so_student_info","test"}));
         mainTable = new JTable(tableModel);
@@ -96,6 +111,7 @@ public class GridMain extends JFrame implements ConvertBridge.Operator {
         tcm.getColumn(8).setCellEditor(editorCheck);
         tcm.getColumn(9).setCellEditor(editorCheck);
         tcm.getColumn(10).setCellEditor(editorCheck);
+        tcm.getColumn(11).setCellEditor(editorCheck);
         // Set column widths
         tcm.getColumn(0).setPreferredWidth(100);
         //tcm.getColumn(1).setPreferredWidth(100);
@@ -106,9 +122,10 @@ public class GridMain extends JFrame implements ConvertBridge.Operator {
         listPane.setViewportView(listDBTable);
         listClassPane.setViewportView(listClassType);
         //getContentPane().add(new JScrollPane(mainTable), "Center");
+        getDbConfig();
         initActionListener();
-        father.setVisible(false);
-        setSize(800, 600);
+        //father.setVisible(false);
+        setSize(1366, 768);
         setLocationRelativeTo(null);
         setVisible(true);
     }
@@ -142,11 +159,28 @@ public class GridMain extends JFrame implements ConvertBridge.Operator {
                         classNameText.setText(tmptableInfo.getTableJavaName());
                         classDescText.setText(tmptableInfo.getTableJavaDesc());
                     }
+                    // 清空模板选中
+                    listClassType.clearSelection();
+                    listClassType.updateUI();
                 }
+                // 刷新界面
                 mainTable.validate();
                 mainTable.repaint();
                 mainTable.doLayout();
                 mainTable.updateUI();
+            }
+        });
+
+        /**
+         * 点击数据库登录事件
+         */
+        connButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if(!isConnect){
+                    doConnDB();
+                }else {
+                    doDisConnDB();
+                }
             }
         });
 
@@ -166,28 +200,77 @@ public class GridMain extends JFrame implements ConvertBridge.Operator {
 
     }
 
-    private void onOK(ActionEvent anActionEvent) {
-        CodeMakerSettings settings = ServiceManager.getService(CodeMakerSettings.class);
-        CodeTemplate codeTemplate = settings.getCodeTemplate("Converter");
-        Map<String, Object> map = TemplateKeyUtil.getTemplateKeyMap(getEntityFromTableData());
-        String contentStr = VelocityUtil.evaluate(codeTemplate.getCodeTemplate(), map);
-//        String content = "package cn.edu.zjvtit.empdemo;\n" +
-//                "public class abc {\n" +
-//                "String a;\n" +
-//                "}";
-        // async write action
-        ApplicationManager.getApplication().runWriteAction(
-                new CreateFileAction(CodeMakerUtil.generateClassPath(project,
-                        PackageText.getText(), classNameText.getText()), contentStr, project));
-
-
+    private void doConnDB (){
+        if(isConnect){
+            JOptionPane.showMessageDialog(null, "数据库已经连接，无需再次登录", "数据库连接", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+        String tmpIp = ipText.getText();
+        String tmpPort = portText.getText();
+        String tmpSchema = schemaText.getText();
+        String tmpDBUrl = tmpIp + ":" + tmpPort + "/" + tmpSchema;
+        String tmpDBUser = userNameText.getText();
+        String tmpDBPasswrd = passwordText.getText();
+        DatabaseConnection dbc=new DatabaseConnection(tmpDBUser,tmpDBPasswrd,tmpDBUrl);
+        connButton.setEnabled(false);
+        if(dbc.testDBConn()) {
+            connButton.setText("Dis Conn");
+            isConnect = true;
+            doEnable(!isConnect);
+            listDBTable.setModel(new DefaultComboBoxModel(getTableInfo(tmpSchema, tmpDBUser, tmpDBPasswrd, tmpDBUrl)));
+            setDBConfig(tmpIp,tmpPort,tmpSchema,tmpDBUser,tmpDBPasswrd);
+        }else {
+            JOptionPane.showMessageDialog(null, "数据库连接失败", "数据库连接", JOptionPane.WARNING_MESSAGE);
+        }
+        connButton.setEnabled(true);
 
     }
+    private void doDisConnDB (){
+        tableDao.disConn();
+        isConnect = false;
+        listDBTable.setModel(new DefaultComboBoxModel(new String[0]));
+        connButton.setText("Conn");
+        doEnable(!isConnect);
+    }
 
+    private void doEnable(boolean enable){
+        ipText.setEnabled(enable);
+        portText.setEnabled(enable);
+        schemaText.setEnabled(enable);
+        userNameText.setEnabled(enable);
+        passwordText.setEnabled(enable);
+    }
+    private void onOK(ActionEvent anActionEvent) {
 
+        List<CodeTemplate> tmpTemplateList = getCodeTemplateList();
+        for(CodeTemplate codeTemplate : tmpTemplateList){
+            Map<String, Object> map = TemplateKeyUtil.getTemplateKeyMap(getEntityFromTableData());
+            String contentStr = VelocityUtil.evaluate(codeTemplate.getCodeTemplate(), map);
+            // async write action
+            ApplicationManager.getApplication().runWriteAction(
+                    new CreateFileAction(CodeMakerUtil.generateClassPath(project,
+                            PackageText.getText(), VelocityUtil.evaluate(codeTemplate.getClassNameVm(), map)), contentStr, project));
+        }
+    }
+
+    private void setDBConfig(String tmpIp,String tmpPort,String tmpSchema,String tmpDBUser,String tmpDBPasswrd){
+        PropertiesComponent.getInstance().setValue("codeGenerteDBIpAddress",tmpIp);
+        PropertiesComponent.getInstance().setValue("codeGenerteDBPort",tmpPort);
+        PropertiesComponent.getInstance().setValue("codeGenerteDBSchema",tmpSchema);
+        PropertiesComponent.getInstance().setValue("codeGenerteDBUserName",tmpDBUser);
+        PropertiesComponent.getInstance().setValue("codeGenerteDBPassword",tmpDBPasswrd);
+    }
+    private void getDbConfig(){
+        ipText.setText(PropertiesComponent.getInstance().getValue("codeGenerteDBIpAddress"));
+        portText.setText(PropertiesComponent.getInstance().getValue("codeGenerteDBPort"));
+        schemaText.setText(PropertiesComponent.getInstance().getValue("codeGenerteDBSchema"));
+        userNameText.setText(PropertiesComponent.getInstance().getValue("codeGenerteDBUserName"));
+        passwordText.setText(PropertiesComponent.getInstance().getValue("codeGenerteDBPassword"));
+    }
 
     private void onCancel() {
-        father.dispose();
+
+        //father.dispose();
         //father.setVisible(true);
         dispose();
     }
@@ -221,8 +304,8 @@ public class GridMain extends JFrame implements ConvertBridge.Operator {
             for (int j=0;j<mainTable.getColumnCount();j++){
                 tmpColName = mainTable.getColumnName(j);
                 // "DBName", "DBType","DBLengtg","DBDesc","JavaName","JavaType","JavaDesc","list","form","edit","max","min"
-                String valueStr = (!tmpColName.equals("list") && !tmpColName.equals("form") && !tmpColName.equals("edit") && !tmpColName.equals("DBNullAble")) ? String.valueOf(mainTable.getValueAt(i,j)) : "";
-                Boolean boolValue = (tmpColName.equals("list") || tmpColName.equals("form") || tmpColName.equals("edit") || tmpColName.equals("DBNullAble"))?(Boolean)mainTable.getValueAt(i,j) : false;
+                String valueStr = (!tmpColName.equals("list") && !tmpColName.equals("form") && !tmpColName.equals("edit") && !tmpColName.equals("DBNullAble") && !tmpColName.equals("JavaNullAble")) ? String.valueOf(mainTable.getValueAt(i,j)) : "";
+                Boolean boolValue = (tmpColName.equals("list") || tmpColName.equals("form") || tmpColName.equals("edit") || tmpColName.equals("DBNullAble") || tmpColName.equals("JavaNullAble")) ? (Boolean)mainTable.getValueAt(i,j) : false;
                 switch (tmpColName){
                     case "DBName":
                         tmpColumnEntity.setColDBName(valueStr);
@@ -231,7 +314,7 @@ public class GridMain extends JFrame implements ConvertBridge.Operator {
                         tmpColumnEntity.setColDBType(valueStr);
                         break;
                     case "DBLength":
-                        tmpColumnEntity.setColDBLength(Long.getLong(valueStr,0));
+                        tmpColumnEntity.setColDBLength(parseLong(valueStr));
                         break;
                     case "DBDesc":
                         tmpColumnEntity.setColDBDesc(valueStr);
@@ -257,11 +340,23 @@ public class GridMain extends JFrame implements ConvertBridge.Operator {
                     case "DBNullAble":
                         tmpColumnEntity.setColDBNullAble(boolValue);
                         break;
-                    case "RangMax":
-                        tmpColumnEntity.setColRangMax(Integer.getInteger(valueStr,0));
+                    case "JavaNullAble":
+                        tmpColumnEntity.setColJavaNullAble(boolValue);
                         break;
-                    case "RangMin":
-                        tmpColumnEntity.setColRangMin(Integer.getInteger(valueStr,0));
+                    case "list":
+                        tmpColumnEntity.setListView(boolValue);
+                        break;
+                    case "form":
+                        tmpColumnEntity.setFormView(boolValue);
+                        break;
+                    case "edit":
+                        tmpColumnEntity.setEditAble(boolValue);
+                        break;
+                    case "max":
+                        tmpColumnEntity.setColRangMax(parseDouble(valueStr));
+                        break;
+                    case "min":
+                        tmpColumnEntity.setColRangMin(parseDouble(valueStr));
                         break;
                 }
             }
@@ -271,14 +366,41 @@ public class GridMain extends JFrame implements ConvertBridge.Operator {
         return  tableEntity;
     }
 
+    private Long parseLong(String val){
+        long tmp = 0L;
+        try{
+            tmp = Long.parseLong(val);
+        }catch (Exception e){return null;};
 
-
+        return tmp;
+    }
+    private Integer parseInt(String val){
+        int tmp = 0;
+        try{
+            tmp = Integer.parseInt(val);
+        }catch (Exception e){return null;};
+        return tmp;
+    }
+    private Float parseFloat(String val){
+        float tmp = 0;
+        try{
+            tmp = Float.parseFloat(val);
+        }catch (Exception e){return null;};
+        return tmp;
+    }
+    private Double parseDouble(String val){
+        double tmp = 0;
+        try{
+            tmp = Double.parseDouble(val);
+        }catch (Exception e){return null;};
+        return tmp;
+    }
     /**
      * 获取表名数组
      * @return 表名数组
      */
     public String[] getTableInfo(String schema,String DBUSER,String DBPASSWORD,String DBURL){
-        TableDao tableDao = new TableDao(DBUSER,DBPASSWORD, DBURL);
+        tableDao = new TableDao(DBUSER,DBPASSWORD, DBURL);
         try {
             tableMap = tableDao.findHashMapAllTableInfo(schema);
             return tableDao.findAllTableName(schema);
@@ -288,11 +410,25 @@ public class GridMain extends JFrame implements ConvertBridge.Operator {
         return null;
     }
 
+    /**
+     * 获取选中的模板列表
+     * @return 选中的模板列表
+     */
+    private List<CodeTemplate> getCodeTemplateList (){
+        List<CodeTemplate> tmpCodeTemplateList = new ArrayList<CodeTemplate>();
+        List<String>  tmpSelectedList =  listClassType.getSelectedValuesList();
+        CodeMakerSettings settings = ServiceManager.getService(CodeMakerSettings.class);
+        for(String tmp : tmpSelectedList){
+            tmpCodeTemplateList.add(settings.getCodeTemplate(tmp));
+        }
+        return tmpCodeTemplateList;
+    }
+
 
     private MouseInputListener getMouseInputListener(final JTable jTable) {
         return new MouseInputListener() {
 
-            final List<Integer> showMenuColIdxs = java.util.Arrays.asList(new Integer[]{8,9,10});
+            final List<Integer> showMenuColIdxs = java.util.Arrays.asList(new Integer[]{8,9,10,11});
 
             public void mouseClicked(MouseEvent e) {
                 processEvent(e);
