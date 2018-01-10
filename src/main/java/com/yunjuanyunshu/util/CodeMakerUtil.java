@@ -9,6 +9,7 @@ import com.intellij.psi.*;
 import com.yunjuanyunshu.CodeTemplate;
 import com.yunjuanyunshu.Entity.ClassEntry;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -46,11 +47,25 @@ public class CodeMakerUtil {
     }
 
     public static String generateClassPath(String sourcePath, String className) {
-        return sourcePath + "/" + className + ".java";
+        return sourcePath + File.separator + className + ".java";
     }
 
     public static String generateClassPath(Project project,String packagePath, String className) {
-        return project.getBasePath() + "/src/" + packagePath.replace(".","/") +"/" + className +".java";
+        return project.getBasePath() + File.separator+"src"+File.separator + packagePath.replace(".","/") +"/" + className +".java";
+    }
+    public static String generateClassPath(Project project,String classRootPath,String packagePath, String className) {
+        classRootPath = classRootPath.replace("/",File.separator);
+        classRootPath = classRootPath.replace("\\\\",File.separator);
+        try {
+            classRootPath = classRootPath.replace("\\", File.separator);
+        }catch (Exception ex){}
+        if(!classRootPath.substring(classRootPath.length()-1).equals(File.separator)){
+            classRootPath = classRootPath+File.separator;
+        }
+        if(!classRootPath.substring(0,1).equals(File.separator)){
+            classRootPath = File.separator + classRootPath;
+        }
+        return project.getBasePath()  + classRootPath + packagePath.replace(".",File.separator) +File.separator + className;
     }
     public static String generateClassPath(Project project,String packagePath, String className,CodeTemplate codeTemplate) {
         return project.getBasePath() + "/src/" + packagePath.replace(".","/") +"/" + className+codeTemplate.getClassNameVm() +".java";

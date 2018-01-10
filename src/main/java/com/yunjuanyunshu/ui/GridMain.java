@@ -11,6 +11,7 @@ import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFile;
 import com.yunjuanyunshu.CodeMakerSettings;
@@ -59,6 +60,7 @@ public class GridMain extends JFrame implements ConvertBridge.Operator {
     private JTextField userNameText;
     private JTextField passwordText;
     private JButton connButton;
+    private JTextField classRootText;
 
 
     private HashMap<String,TableEntity> tableMap;
@@ -113,8 +115,18 @@ public class GridMain extends JFrame implements ConvertBridge.Operator {
         tcm.getColumn(9).setCellEditor(editorCheck);
         tcm.getColumn(10).setCellEditor(editorCheck);
         tcm.getColumn(11).setCellEditor(editorCheck);
+        tcm.getColumn(12).setCellEditor(editorCheck);
+        tcm.getColumn(13).setCellEditor(editorCheck);
+        tcm.getColumn(14).setCellEditor(editorCheck);
         // Set column widths
         tcm.getColumn(0).setPreferredWidth(100);
+        tcm.getColumn(8).setPreferredWidth(50);
+        tcm.getColumn(9).setPreferredWidth(50);
+        tcm.getColumn(10).setPreferredWidth(50);
+        tcm.getColumn(11).setPreferredWidth(50);
+        tcm.getColumn(12).setPreferredWidth(50);
+        tcm.getColumn(13).setPreferredWidth(50);
+        tcm.getColumn(14).setPreferredWidth(50);
         //tcm.getColumn(1).setPreferredWidth(100);
         mainTable.setRowHeight(30);
         mainTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
@@ -157,6 +169,7 @@ public class GridMain extends JFrame implements ConvertBridge.Operator {
                 String tmpDBUrl = tmpIp + ":" + tmpPort + "/" + tmpSchema;
                 String tmpDBUser = userNameText.getText();
                 String tmpDBPasswrd = passwordText.getText();
+
                 if(tableMap.containsKey(tmpTableName)){
                     tmptableInfo = tableMap.get(tmpTableName);
                     ColumnDao columnDao =new ColumnDao(tmpDBUser,tmpDBPasswrd ,tmpDBUrl);
@@ -216,7 +229,8 @@ public class GridMain extends JFrame implements ConvertBridge.Operator {
 
     private void doConnDB (){
         if(isConnect){
-            JOptionPane.showMessageDialog(null, "数据库已经连接，无需再次登录", "数据库连接", JOptionPane.INFORMATION_MESSAGE);
+            Messages.showInfoMessage("数据库已经连接，无需再次登录", "数据库连接");
+            //JOptionPane.showMessageDialog(null, "数据库已经连接，无需再次登录", "数据库连接", JOptionPane.INFORMATION_MESSAGE);
             return;
         }
         String tmpIp = ipText.getText();
@@ -234,7 +248,8 @@ public class GridMain extends JFrame implements ConvertBridge.Operator {
             listDBTable.setModel(new DefaultComboBoxModel(getTableInfo(tmpSchema, tmpDBUser, tmpDBPasswrd, tmpDBUrl)));
             setDBConfig(tmpIp,tmpPort,tmpSchema,tmpDBUser,tmpDBPasswrd);
         }else {
-            JOptionPane.showMessageDialog(null, "数据库连接失败", "数据库连接", JOptionPane.WARNING_MESSAGE);
+            Messages.showErrorDialog("数据库连接失败", "数据库连接");
+            //JOptionPane.showMessageDialog(null, "数据库连接失败", "数据库连接", JOptionPane.WARNING_MESSAGE);
         }
         connButton.setEnabled(true);
 
@@ -256,25 +271,43 @@ public class GridMain extends JFrame implements ConvertBridge.Operator {
     }
     private void onOK(ActionEvent anActionEvent) {
         // 执行生成代码
+
         List<CodeTemplate> tmpTemplateList = getCodeTemplateList();
+        if(tmpTemplateList == null || tmpTemplateList.size() == 0){
+            Messages.showInfoMessage("未选中任何模板", "代码生成");
+            //JOptionPane.showMessageDialog(null, "未选中任何模板", "代码生成", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+        String tmpClassRootPath = classRootText.getText();
+        String tmpPackage = PackageText.getText();
         String tempInfoStr="文件：\n";
         String tmpFilePath = "";
+        int tmpSuccessCount=0;
         for(CodeTemplate codeTemplate : tmpTemplateList){
             try{
                 Map<String, Object> map = TemplateKeyUtil.getTemplateKeyMap(getEntityFromTableData());
                 String contentStr = VelocityUtil.evaluate(codeTemplate.getCodeTemplate(), map);
-                tmpFilePath = CodeMakerUtil.generateClassPath(project,
+                tmpFilePath = CodeMakerUtil.generateClassPath(project,tmpClassRootPath,
                         PackageText.getText(), VelocityUtil.evaluate(codeTemplate.getClassNameVm(), map));
                 // 异步写入
                 ApplicationManager.getApplication().runWriteAction(
                         new CreateFileAction(tmpFilePath, contentStr, project));
-            tempInfoStr = tempInfoStr + "\t"+tmpFilePath+"\n";
+                tempInfoStr = tempInfoStr + "\t"+tmpFilePath+"\n";
+                tmpSuccessCount++;
             }catch (Exception ex){
-                JOptionPane.showMessageDialog(null, codeTemplate.getClassNameVm()+ " 生成错误，请检查代码！", "代码生成", JOptionPane.ERROR_MESSAGE);
-            }
 
+                ex.printStackTrace();
+                //JOptionPane.showMessageDialog(null, codeTemplate.getClassNameVm()+ " 生成错误，请检查代码！", "代码生成", JOptionPane.ERROR_MESSAGE);
+                Messages.showErrorDialog(codeTemplate.getClassNameVm()+ " 生成错误，请检查代码:\n"+ex.getMessage()+"\n"+ex.toString(), "代码生成");
+            }
         }
+        PropertiesComponent.getInstance().setValue("codeGenerteClassPath",tmpClassRootPath);
+        PropertiesComponent.getInstance().setValue("codeGenertePackage",tmpPackage);
         tempInfoStr = tempInfoStr + "生成成功！";
+        //JOptionPane.showMessageDialog(null, tempInfoStr, "代码生成", JOptionPane.INFORMATION_MESSAGE);
+        if(tmpSuccessCount>0){
+            Messages.showInfoMessage(tempInfoStr, "代码生成");
+        }
 
     }
 
@@ -291,6 +324,8 @@ public class GridMain extends JFrame implements ConvertBridge.Operator {
         schemaText.setText(PropertiesComponent.getInstance().getValue("codeGenerteDBSchema"));
         userNameText.setText(PropertiesComponent.getInstance().getValue("codeGenerteDBUserName"));
         passwordText.setText(PropertiesComponent.getInstance().getValue("codeGenerteDBPassword"));
+        classRootText.setText(PropertiesComponent.getInstance().getValue("codeGenerteClassPath"));
+        PackageText.setText(PropertiesComponent.getInstance().getValue("codeGenertePackage"));
     }
 
     private void onCancel() {
@@ -469,7 +504,7 @@ public class GridMain extends JFrame implements ConvertBridge.Operator {
     private MouseInputListener getMouseInputListener(final JTable jTable) {
         return new MouseInputListener() {
 
-            final List<Integer> showMenuColIdxs = java.util.Arrays.asList(new Integer[]{8,9,10,11});
+            final List<Integer> showMenuColIdxs = java.util.Arrays.asList(new Integer[]{8,9,10,11,12,13,14});
 
             public void mouseClicked(MouseEvent e) {
                 processEvent(e);

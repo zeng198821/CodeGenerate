@@ -11,6 +11,8 @@ import com.yunjuanyunshu.util.CodeMakerUtil;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 /**
  * @author hansong.xhs
@@ -30,13 +32,21 @@ public class CreateFileAction implements Runnable {
 
     public CreateFileAction(String outputFile, String content, Project project) {
         this.outputFile = outputFile;
-        this.content = content;
+        try {
+            this.content = new String(content.getBytes("UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         this.project = project;
     }
 
     public CreateFileAction(String outputFile, String content, DataContext dataContext) {
         this.outputFile = outputFile;
-        this.content = content;
+        try {
+            this.content = new String(content.getBytes("UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         this.dataContext = dataContext;
     }
 
@@ -52,27 +62,33 @@ public class CreateFileAction implements Runnable {
                 overwriteInd = Messages.showYesNoDialog("文件“ "+outputFile+" ”已经存在！是否替换", "文件替换", null);
                 switch (overwriteInd) {
                     case Messages.OK:
-                        virtualFile.setBinaryContent(content.getBytes());
+                        try{
+                            virtualFile.delete(project);
+                        }catch (IOException ioe){
+                            Messages.showErrorDialog("删除已有文件失败", "代码生成");
+                            return;
+                        }
                         break;
                     case Messages.NO:
                         return;
                 }
             } else {
-                File file = new File(outputFile);
-                if (!file.getParentFile().exists()) {
-                    file.getParentFile().mkdir();
-                }
-                FileWriter fileWriter = null;
-                try {
-                    fileWriter = new FileWriter(file);
-                    fileWriter.write(content);
-                } finally {
-                    if (fileWriter != null) {
-                        fileWriter.close();
-                    }
-                }
-                virtualFile = manager.refreshAndFindFileByUrl(VfsUtil.pathToUrl(outputFile));
+
             }
+            File file = new File(outputFile);
+            if (!file.getParentFile().exists()) {
+                file.getParentFile().mkdir();
+            }
+            FileWriter fileWriter = null;
+            try {
+                fileWriter = new FileWriter(file);
+                fileWriter.write(content);
+            } finally {
+                if (fileWriter != null) {
+                    fileWriter.close();
+                }
+            }
+            virtualFile = manager.refreshAndFindFileByUrl(VfsUtil.pathToUrl(outputFile));
             VirtualFile finalVirtualFile = virtualFile;
 
             if (finalVirtualFile == null || project == null) {
@@ -85,7 +101,7 @@ public class CreateFileAction implements Runnable {
 //                        true));
 
         } catch (Exception e) {
-            LOGGER.error("Create file failed", e);
+            LOGGER.error("创建文件失败", e);
         }
 
     }

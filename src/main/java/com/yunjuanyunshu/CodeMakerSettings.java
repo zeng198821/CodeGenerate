@@ -67,7 +67,7 @@ public class CodeMakerSettings implements PersistentStateComponent<CodeMakerSett
                                            + "\n"
                                            + "#end\n" + "\n" + "}\n";
     public final static String example =
-            "//  函数声明使用范例如下 \n"+
+            "##  函数声明使用范例如下 \n"+
             "#macro (cap $strIn)$strIn.valueOf($strIn.charAt(0)).toUpperCase()$strIn.substring(1)#end\n" +
             "#macro (low $strIn)$strIn.valueOf($strIn.charAt(0)).toLowerCase()$strIn.substring(1)#end\n" +
             "\n" +
@@ -79,22 +79,22 @@ public class CodeMakerSettings implements PersistentStateComponent<CodeMakerSett
             "\n" +
             "\n" +
             "/**\n" +
-            " * ${TableEntity.tableJavaDesc}Server\n" +
+            " * ${TableEntity.tableJavaDesc}\n" +
             " * @author $USER\n" +
             " * @version ${TableEntity.tableJavaName}.java, v 0.1 $TIME $USER Exp $$\n" +
             " */\n" +
-            "class ${TableEntity.tableJavaName}Server {\n" +
-            "\n // 循环使用范例如下 \n"+
+            "class ${TableEntity.tableJavaName} {\n" +
+            "\n## 循环使用范例如下 \n"+
             "#foreach($field in $TableEntity.ColumnEntityList)\n" +
             "    /**\n" +
             "     * ${field.colJavaDesc}\n" +
-            "     */\n //  判断语句使用范例如下 \n" +
+            "     */\n##  判断语句使用范例如下 \n" +
             "  #if($field.colJavaNullAble)\n" +
             "     @CanNull(${field.colJavaNullAble})\n" +
             "  #end\n" +
             "  #if($field.colJavaType.equals(\"String\"))\n" +
             "     @Length(${field.colDBLength})\n" +
-            "  #end\n// null 判断 直接使用变量判断即可 null 在此时可以理解位 false\n" +
+            "  #end\n## null 判断 直接使用变量判断即可 null 在此时可以理解位 false\n" +
             "  #if($field.colRangMax && ($field.colJavaType.equals(\"long\") || $field.colJavaType.equals(\"float\") || $field.colJavaType.equals(\"double\") || $field.colJavaType.equals(\"int\")))\n" +
             "     @Max(${field.colRangMax.doubleValue()})\n" +
             "  #end\n" +
@@ -133,7 +133,7 @@ public class CodeMakerSettings implements PersistentStateComponent<CodeMakerSett
     public void loadDefaultSettings() {
         Map<String, CodeTemplate> codeTemplates = new HashMap<>();
         codeTemplates.put("Example", new CodeTemplate("Example",
-            "#set($end = ${class0.className.length()} - 2)${class0.className.substring(0,${end})}",
+            "${TableEntity.tableJavaName}.java",
                 example, 1));
         this.codeTemplates = codeTemplates;
     }
