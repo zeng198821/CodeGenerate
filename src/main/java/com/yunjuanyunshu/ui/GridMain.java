@@ -18,6 +18,7 @@ import com.yunjuanyunshu.CodeTemplate;
 import com.yunjuanyunshu.Entity.ColumnEntity;
 import com.yunjuanyunshu.Entity.TableEntity;
 import com.yunjuanyunshu.action.CreateFileAction;
+import com.yunjuanyunshu.db.dao.ColumnDao;
 import com.yunjuanyunshu.db.dao.TableDao;
 import com.yunjuanyunshu.db.dbc.DatabaseConnection;
 import com.yunjuanyunshu.util.CodeMakerUtil;
@@ -84,7 +85,7 @@ public class GridMain extends JFrame implements ConvertBridge.Operator {
         //this.father = father;
         this.project = project;
         settings = ServiceManager.getService(CodeMakerSettings.class);
-        setTitle("Code Generate");
+        setTitle("Code Generate                      By Zeng");
         getRootPane().setDefaultButton(okButton);
         this.setAlwaysOnTop(true);
         JComboBox comboBox = new JComboBox(ComboBoxTableModel.getValidStates());
@@ -150,8 +151,21 @@ public class GridMain extends JFrame implements ConvertBridge.Operator {
             public void valueChanged(ListSelectionEvent e) {
                 TableEntity tmptableInfo ;
                 String tmpTableName = (String) listDBTable.getSelectedValue();
+                String tmpIp = ipText.getText();
+                String tmpPort = portText.getText();
+                String tmpSchema = schemaText.getText();
+                String tmpDBUrl = tmpIp + ":" + tmpPort + "/" + tmpSchema;
+                String tmpDBUser = userNameText.getText();
+                String tmpDBPasswrd = passwordText.getText();
                 if(tableMap.containsKey(tmpTableName)){
                     tmptableInfo = tableMap.get(tmpTableName);
+                    ColumnDao columnDao =new ColumnDao(tmpDBUser,tmpDBPasswrd ,tmpDBUrl);
+                    try {
+                        tmptableInfo.setColumnEntityList(columnDao.findAllColumnInfo(tmpSchema,tmpTableName));
+                    } catch (Exception e1) {
+                        tmptableInfo.setColumnEntityList(null);
+                        e1.printStackTrace();
+                    }
                     if(tmptableInfo != null && tmptableInfo.getColumnEntityList() != null){
                         tableModel.setDataFromTableEntity(tmptableInfo);
                         tableNameText.setText(tmptableInfo.getTableDBName());
@@ -241,7 +255,7 @@ public class GridMain extends JFrame implements ConvertBridge.Operator {
         passwordText.setEnabled(enable);
     }
     private void onOK(ActionEvent anActionEvent) {
-
+        // 执行生成代码
         List<CodeTemplate> tmpTemplateList = getCodeTemplateList();
         for(CodeTemplate codeTemplate : tmpTemplateList){
             Map<String, Object> map = TemplateKeyUtil.getTemplateKeyMap(getEntityFromTableData());
@@ -304,8 +318,8 @@ public class GridMain extends JFrame implements ConvertBridge.Operator {
             for (int j=0;j<mainTable.getColumnCount();j++){
                 tmpColName = mainTable.getColumnName(j);
                 // "DBName", "DBType","DBLengtg","DBDesc","JavaName","JavaType","JavaDesc","list","form","edit","max","min"
-                String valueStr = (!tmpColName.equals("list") && !tmpColName.equals("form") && !tmpColName.equals("edit") && !tmpColName.equals("DBNullAble") && !tmpColName.equals("JavaNullAble")) ? String.valueOf(mainTable.getValueAt(i,j)) : "";
-                Boolean boolValue = (tmpColName.equals("list") || tmpColName.equals("form") || tmpColName.equals("edit") || tmpColName.equals("DBNullAble") || tmpColName.equals("JavaNullAble")) ? (Boolean)mainTable.getValueAt(i,j) : false;
+                String valueStr = (!tmpColName.equals("list") && !tmpColName.equals("form") && !tmpColName.equals("edit") && !tmpColName.equals("select") && !tmpColName.equals("DBNullAble") && !tmpColName.equals("JavaNullAble") && !tmpColName.equals("exp") && !tmpColName.equals("imp")) ? String.valueOf(mainTable.getValueAt(i,j)) : "";
+                Boolean boolValue = (tmpColName.equals("list") || tmpColName.equals("form") || tmpColName.equals("edit") || tmpColName.equals("DBNullAble") || tmpColName.equals("JavaNullAble") || tmpColName.equals("exp") || tmpColName.equals("imp")) ? (Boolean)mainTable.getValueAt(i,j) : false;
                 switch (tmpColName){
                     case "DBName":
                         tmpColumnEntity.setColDBName(valueStr);
@@ -351,6 +365,18 @@ public class GridMain extends JFrame implements ConvertBridge.Operator {
                         break;
                     case "edit":
                         tmpColumnEntity.setEditAble(boolValue);
+                        break;
+                    case "select":
+                        tmpColumnEntity.setSelect(boolValue);
+                        break;
+                    case "exp":
+                        tmpColumnEntity.setExp(boolValue);
+                        break;
+                    case "imp":
+                        tmpColumnEntity.setImp(boolValue);
+                        break;
+                    case "dict":
+                        tmpColumnEntity.setDict(valueStr);
                         break;
                     case "max":
                         tmpColumnEntity.setColRangMax(parseDouble(valueStr));
@@ -499,6 +525,9 @@ public class GridMain extends JFrame implements ConvertBridge.Operator {
         };
     }
 
+    /**
+     * 右键操作
+     */
     class MyMenuActionListener implements ActionListener {
 
         JTable jTable;

@@ -71,6 +71,22 @@ public class ColumnEntity implements BaseEntity {
      * Java类该字段是否允许为空
      */
     Boolean colJavaNullAble;
+    /**
+     * 导入标识
+     */
+    Boolean imp;
+    /**
+     * 导出标识
+     */
+    Boolean exp;
+    /**
+     * 参与查询字段
+     */
+    Boolean select;
+    /**
+     * 字段类型
+     */
+    String dict;
 
     /**
      *
@@ -190,5 +206,38 @@ public class ColumnEntity implements BaseEntity {
 
     public void setColJavaNullAble(Boolean colJavaNullAble) {
         this.colJavaNullAble = colJavaNullAble;
+    }
+
+    public Boolean getImp() {
+        return imp;
+    }
+
+    public void setImp(Boolean imp) {
+        this.imp = imp;
+    }
+
+    public Boolean getExp() {
+        return exp;
+    }
+
+    public void setExp(Boolean exp) {
+        this.exp = exp;
+    }
+
+
+    public Boolean getSelect() {
+        return select;
+    }
+
+    public void setSelect(Boolean select) {
+        this.select = select;
+    }
+
+    public String getDict() {
+        return dict;
+    }
+
+    public void setDict(String dict) {
+        this.dict = dict;
     }
 }

@@ -49,7 +49,7 @@ public class CreateFileAction implements Runnable {
             int overwriteInd;
 
             if (virtualFile != null && virtualFile.exists()) {
-                overwriteInd = Messages.showYesNoDialog("Overwrite?", "File Exists", null);
+                overwriteInd = Messages.showYesNoDialog("文件“ "+outputFile+" ”已经存在！是否替换", "文件替换", null);
                 switch (overwriteInd) {
                     case Messages.OK:
                         virtualFile.setBinaryContent(content.getBytes());

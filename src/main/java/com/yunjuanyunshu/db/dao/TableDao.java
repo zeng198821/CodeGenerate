@@ -101,8 +101,8 @@ public class TableDao implements IDao<TableEntity>{
                 tmp.setTableJavaName(HumpLineUtil.getJavaTableName(tmp.getTableDBName()));
                 tmp.setTableJavaDesc(tmp.getTableDBDesc());
 
-                ColumnDao columnDao =new ColumnDao(this.dbUser,this.dbPassword ,this.dbUrl);
-                tmp.setColumnEntityList(columnDao.findAllColumnInfo(schema,tmp.getTableDBName()));
+//                ColumnDao columnDao =new ColumnDao(this.dbUser,this.dbPassword ,this.dbUrl);
+//                tmp.setColumnEntityList(columnDao.findAllColumnInfo(schema,tmp.getTableDBName()));
                 all.add(tmp);
             }
         }catch(Exception e){
