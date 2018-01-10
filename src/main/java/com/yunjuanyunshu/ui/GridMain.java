@@ -257,14 +257,25 @@ public class GridMain extends JFrame implements ConvertBridge.Operator {
     private void onOK(ActionEvent anActionEvent) {
         // 执行生成代码
         List<CodeTemplate> tmpTemplateList = getCodeTemplateList();
+        String tempInfoStr="文件：\n";
+        String tmpFilePath = "";
         for(CodeTemplate codeTemplate : tmpTemplateList){
-            Map<String, Object> map = TemplateKeyUtil.getTemplateKeyMap(getEntityFromTableData());
-            String contentStr = VelocityUtil.evaluate(codeTemplate.getCodeTemplate(), map);
-            // async write action
-            ApplicationManager.getApplication().runWriteAction(
-                    new CreateFileAction(CodeMakerUtil.generateClassPath(project,
-                            PackageText.getText(), VelocityUtil.evaluate(codeTemplate.getClassNameVm(), map)), contentStr, project));
+            try{
+                Map<String, Object> map = TemplateKeyUtil.getTemplateKeyMap(getEntityFromTableData());
+                String contentStr = VelocityUtil.evaluate(codeTemplate.getCodeTemplate(), map);
+                tmpFilePath = CodeMakerUtil.generateClassPath(project,
+                        PackageText.getText(), VelocityUtil.evaluate(codeTemplate.getClassNameVm(), map));
+                // 异步写入
+                ApplicationManager.getApplication().runWriteAction(
+                        new CreateFileAction(tmpFilePath, contentStr, project));
+            tempInfoStr = tempInfoStr + "\t"+tmpFilePath+"\n";
+            }catch (Exception ex){
+                JOptionPane.showMessageDialog(null, codeTemplate.getClassNameVm()+ " 生成错误，请检查代码！", "代码生成", JOptionPane.ERROR_MESSAGE);
+            }
+
         }
+        tempInfoStr = tempInfoStr + "生成成功！";
+
     }
 
     private void setDBConfig(String tmpIp,String tmpPort,String tmpSchema,String tmpDBUser,String tmpDBPasswrd){
@@ -304,6 +315,10 @@ public class GridMain extends JFrame implements ConvertBridge.Operator {
 
     }
 
+    /**
+     * 获取表中字段配置信息
+     * @return
+     */
     private TableEntity getEntityFromTableData(){
         TableEntity tableEntity = new TableEntity();
         tableEntity.setPackageStr(PackageText.getText());

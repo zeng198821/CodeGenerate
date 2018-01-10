@@ -59,7 +59,7 @@ Class Entry Structure:
 #macro (low $strIn)$strIn.valueOf($strIn.charAt(0)).toLowerCase()$strIn.substring(1)#end
 
 /**
-* Alipay.com Inc.
+*
 * Copyright (c) 2004-$YEAR All Rights Reserved.
 */
 package $TableEntity.PackageStr;

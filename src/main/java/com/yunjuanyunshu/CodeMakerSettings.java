@@ -11,11 +11,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @author hansong.xhs
- * @version $Id: CodeMakerSettings.java, v 0.1 2017-01-28 9:30 hansong.xhs Exp $$
- */
-@State(name = "CodeMakerSettings", storages = { @Storage(id = "app-default", file = "$APP_CONFIG$/CodeMaker-settings.xml") })
+
+@State(name = "CodeGenerateSettings", storages = { @Storage(id = "app-default", file = "$APP_CONFIG$/CodeGenerate-settings.xml") })
 public class CodeMakerSettings implements PersistentStateComponent<CodeMakerSettings> {
 
     public final static String MODEL  = "########################################################################################\n"
@@ -69,56 +66,42 @@ public class CodeMakerSettings implements PersistentStateComponent<CodeMakerSett
                                            + "    private $field.Type $field.Name;\n"
                                            + "\n"
                                            + "#end\n" + "\n" + "}\n";
-
-    public final static String CONVERTER = "########################################################################################\n" +
-            "##\n" +
-            "## Common variables:\n" +
-            "##  $YEAR - yyyy\n" +
-            "##  $TIME - yyyy-MM-dd HH:mm:ss\n" +
-            "##  $USER - user.name\n" +
-            "##\n" +
-            "## Available variables:\n" +
-            "##  $TableEntity.tableJavaName - the context class\n" +
-            "##  $class1 - the selected class, like $class2, $class2\n" +
-            "##  $TableEntity.tableJavaName - generate by the config of \"Class Name\", the generated class name\n" +
-            "##\n" +
-            "## Class Entry Structure:\n" +
-            "##  $TableEntity.tableJavaName.TableEntity.tableJavaName - the class Name\n" +
-            "##  $TableEntity.tableJavaName.packageName - the packageName\n" +
-            "##  $TableEntity.tableJavaName.importList - the list of imported classes name\n" +
-            "##  $TableEntity.tableJavaName.fields - the list of the class fields\n" +
-            "##          - type: the field type\n" +
-            "##          - name: the field name\n" +
-            "##          - modifier: the field modifier, like \"private\"\n" +
-            "##  $TableEntity.tableJavaName.methods - the list of class methods\n" +
-            "##          - name: the method name\n" +
-            "##          - modifier: the method modifier, like \"private static\"\n" +
-            "##          - returnType: the method returnType\n" +
-            "##          - params: the method params, like \"(String name)\"\n" +
-            "##\n" +
-            "########################################################################################\n" +
+    public final static String example =
+            "//  函数声明使用范例如下 \n"+
             "#macro (cap $strIn)$strIn.valueOf($strIn.charAt(0)).toUpperCase()$strIn.substring(1)#end\n" +
             "#macro (low $strIn)$strIn.valueOf($strIn.charAt(0)).toLowerCase()$strIn.substring(1)#end\n" +
             "\n" +
             "/**\n" +
-            "* Alipay.com Inc.\n" +
-            "* Copyright (c) 2004-$YEAR All Rights Reserved.\n" +
-            "*/\n" +
+            " * \n" +
+            " * Copyright (c) 2004-$YEAR All Rights Reserved.\n" +
+            " */\n" +
             "package $TableEntity.PackageStr;\n" +
             "\n" +
             "\n" +
             "/**\n" +
-            " * ${TableEntity.tableJavaDesc}\n" +
+            " * ${TableEntity.tableJavaDesc}Server\n" +
             " * @author $USER\n" +
             " * @version ${TableEntity.tableJavaName}.java, v 0.1 $TIME $USER Exp $$\n" +
             " */\n" +
-            "class $TableEntity.tableJavaName {\n" +
-            "\n" +
+            "class ${TableEntity.tableJavaName}Server {\n" +
+            "\n // 循环使用范例如下 \n"+
             "#foreach($field in $TableEntity.ColumnEntityList)\n" +
             "    /**\n" +
             "     * ${field.colJavaDesc}\n" +
-            "     */\n" +
-            "    private ${field.colJavaType} ${field.colJavaName} ;\n" +
+            "     */\n //  判断语句使用范例如下 \n" +
+            "  #if($field.colJavaNullAble)\n" +
+            "     @CanNull(${field.colJavaNullAble})\n" +
+            "  #end\n" +
+            "  #if($field.colJavaType.equals(\"String\"))\n" +
+            "     @Length(${field.colDBLength})\n" +
+            "  #end\n// null 判断 直接使用变量判断即可 null 在此时可以理解位 false\n" +
+            "  #if($field.colRangMax && ($field.colJavaType.equals(\"long\") || $field.colJavaType.equals(\"float\") || $field.colJavaType.equals(\"double\") || $field.colJavaType.equals(\"int\")))\n" +
+            "     @Max(${field.colRangMax.doubleValue()})\n" +
+            "  #end\n" +
+            "  #if($field.colRangMin && ($field.colJavaType.equals(\"long\") || $field.colJavaType.equals(\"float\") || $field.colJavaType.equals(\"double\") || $field.colJavaType.equals(\"int\")))\n" +
+            "     @Min(${field.colRangMin.doubleValue()})\n" +
+            "  #end\n" +
+            "     private ${field.colJavaType} ${field.colJavaName} ;\n" +
             "#end\n" +
             "\n" +
             "\n" +
@@ -141,7 +124,7 @@ public class CodeMakerSettings implements PersistentStateComponent<CodeMakerSett
             "\n" +
             "#end\n" +
             "\n" +
-            "}\n";
+            "}";
 
     public CodeMakerSettings() {
         loadDefaultSettings();
@@ -149,11 +132,9 @@ public class CodeMakerSettings implements PersistentStateComponent<CodeMakerSett
 
     public void loadDefaultSettings() {
         Map<String, CodeTemplate> codeTemplates = new HashMap<>();
-        codeTemplates.put("Converter", new CodeTemplate("Converter",
-            "${class0.className}Converter", CONVERTER, 2));
-        codeTemplates.put("Model", new CodeTemplate("Model",
+        codeTemplates.put("Example", new CodeTemplate("Example",
             "#set($end = ${class0.className.length()} - 2)${class0.className.substring(0,${end})}",
-            MODEL, 1));
+                example, 1));
         this.codeTemplates = codeTemplates;
     }
 
